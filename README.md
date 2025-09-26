@@ -1,39 +1,116 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# 🧩 two_dimensional_grid
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+A highly customizable **two-dimensional snapping grid** widget for Flutter.  
+Designed for use cases where you need **precise navigation**, **snapping behavior**, and **focus scaling** for individual items in a grid — perfect for media libraries, galleries, or interactive dashboards.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+---
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## ✨ Features
 
-## Features
+- 🔄 **2D snapping navigation** — swipe vertically or horizontally to move focus.
+- 🎯 **Focus awareness** — notifies which item is currently centered.
+- 🖱️ **Tap to snap** — built-in `snapToCenter` callback.
+- 🔍 **Animated zoom ("jump") effect** — configurable `scale` and `scaleJump`.
+- ⚡ **Smooth pan + scale animation** — handled by a single `AnimationController`.
+- 📱 **Edge-to-edge immersive layout** — status/navigation bars made transparent.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+---
 
-## Getting started
+## 📦 Installation
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Add the package to your `pubspec.yaml`:
 
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+```yaml
+dependencies:
+  two_dimensional_grid: ^0.0.1
 ```
 
-## Additional information
+Then import it:
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```dart
+import 'package:two_dimensional_grid/two_dimensional_grid.dart';
+```
+
+## 🚀 Usage
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:two_dimensional_grid/two_dimensional_grid.dart';
+
+class ExamplePage extends StatelessWidget {
+  const ExamplePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: TwoDimensionalGrid(
+        count: 100,
+        crossAxisCount: 10,
+        itemWidth: 120,
+        itemHeight: 180,
+        spacing: 6,
+        scale: 1.6,
+        scaleJump: 0.3,
+        builder: (ctx, index, isCenter, snapToCenter) {
+          return GestureDetector(
+            onTap: snapToCenter,
+            child: AnimatedScale(
+              duration: const Duration(milliseconds: 150),
+              scale: isCenter ? 1.0 : 0.9,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isCenter ? Colors.white : Colors.grey.shade800,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    '$index',
+                    style: TextStyle(
+                      color: isCenter ? Colors.black : Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+```
+
+## ⚙️ API
+| Parameter           | Type                        | Default | Description                                                             |
+| ------------------- | --------------------------- | ------- | ----------------------------------------------------------------------- |
+| `count`             | `int`                       | –       | Total number of items in the grid.                                      |
+| `builder`           | `TwoDimensionalItemBuilder` | –       | Item builder with `(context, index, isCenter, snapToCenter)` signature. |
+| `crossAxisCount`    | `int`                       | `6`     | Number of items per row.                                                |
+| `itemWidth`         | `double`                    | `200`   | Item width.                                                             |
+| `itemHeight`        | `double`                    | `260`   | Item height.                                                            |
+| `spacing`           | `double`                    | `4`     | Space between items.                                                    |
+| `padding`           | `double`                    | `4`     | Grid padding.                                                           |
+| `scale`             | `double`                    | `1.4`   | Base zoom scale when item is centered.                                  |
+| `scaleJump`         | `double`                    | `0.2`   | Extra zoom "jump" when snapping to an item.                             |
+| `animationDuration` | `Duration`                  | `300ms` | Total duration of snap + jump animation.                                |
+
+## 🎯 When to Use
+- Photo galleries or video thumbnails.
+- Product catalogs.
+- Selectors for maps, emojis, avatars.
+- Any interface where the current selection matters and should be visually emphasized.
+
+## 💡 Notes
+- Designed for portrait orientation by default.
+- Pan gestures are fully controlled — no free scrolling.
+- Best suited for grids with a moderate number of items (e.g. ≤ 500) because each snap computes nearest item distances.
+
+## 📌 Example Behavior
+- Swipe up/down → focus moves one row.
+- Swipe left/right → focus moves one column.
+- Tap item → smoothly animates into center with a jump effect.
+
+## 📄 License
+This project is licensed under the terms of the **nolicense** license.
